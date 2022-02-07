@@ -36,4 +36,4 @@ yarn-error.log*
 /cypress/videos/pages
 
 
-next.config.js
+# next.config.js
