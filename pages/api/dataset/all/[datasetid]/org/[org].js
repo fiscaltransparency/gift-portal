@@ -11,7 +11,7 @@ import { getDecryptedSecret } from '../../../../../../lib/decret-secret'
 
 async function combine(storage, dataset, datasetid, org, allCreated){
   // const storage = new Storage()
-  const gcBucket = storage.bucket('gift-datasets')
+  const gcBucket = storage.bucket('gift-datasets2')
   //extract hash for all dataset
   let sourceFiles = dataset['resources'].map((resource)=>{
     let fname = `gift-data/${datasetid}/${resource.hash}`
@@ -45,7 +45,7 @@ async function combine(storage, dataset, datasetid, org, allCreated){
 }
 
 async function download(storage, org, res){
-  let bucket = storage.bucket('gift-datasets')
+  let bucket = storage.bucket('gift-datasets2')
   let [metaData] = await bucket.file(`gift-data/all/${org}`).getMetadata()
   res.redirect(metaData.mediaLink)
   // res.setHeader("content-disposition", "attachment; filename=" + `${org}`);
@@ -93,7 +93,7 @@ export default async function handler(req, res) {
       projectId: process.env.PROJECT_ID,
       credentials: getDecryptedSecret()})
 
-    const bucketName = 'gift-datasets'
+    const bucketName = 'gift-datasets2'
     let allFileExist
     let allFileCreated = null
 
