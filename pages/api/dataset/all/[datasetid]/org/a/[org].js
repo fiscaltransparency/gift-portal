@@ -32,13 +32,12 @@ export default async function handler(req, res) {
 
     const metastore = new Metastore(apolloClientG.cache.extract())
     const dataset = await metastore.fetch(organization)
-
     //load google cloud storage
     const storage = new Storage({
       projectId: process.env.PROJECT_ID,
       credentials: getDecryptedSecret()})
 
-    const bucketName = "gift-datasets"
+    const bucketName = "gift-datasets2"
     let bucket = storage.bucket(bucketName)
 
     let operationUser = uuidv4()
@@ -54,13 +53,12 @@ export default async function handler(req, res) {
       if (i > 0) fname = `gift-data/copy/${resource.hashcopy}` 
 
       newFileStorage.push(bucket.file(fname))
-      newFileStorage.push(bucket.file(fname))
     }
 
     const mergeFile = bucket.file(`gift-data/${operationUser}/${org}`)
     await bucket.combine(newFileStorage, mergeFile)
     
-    await download(mergeFile, res)
+    await downloadv2(mergeFile, res)
     // download(mergeFile, res).then(res => {
     //   mergeFile.delete()
     // })
@@ -74,4 +72,12 @@ export default async function handler(req, res) {
 async function download(mergeFile, res){
   let [metaData] = await mergeFile.getMetadata()
   res.redirect(metaData.mediaLink)
+}
+
+async function downloadv2(mergeFile, res) {
+  const [signedUrl] = await mergeFile.getSignedUrl({
+    action: "read",
+    expires: Date.now() + 15 * 60 * 1000,
+  })
+  res.redirect(signedUrl)
 }
