@@ -9,10 +9,16 @@ import { getDecryptedSecret } from '../../../../lib/decret-secret'
 import { v4 as uuidv4 } from 'uuid'
 
 export default async function handler(req, res) {
+  try {
+    
   const apolloClient = initializeApollo()
-//   await apolloClient.query({query: PERMISSIONS})
+  await apolloClient.query({query: PERMISSIONS})
 //   const permissions = new Permissions(apolloClient.cache.extract())
   res.status(200).send("In here");
+  }
+  catch(error){
+    res.status(200).send(error);
+  }
 
   try {
     const { id, org} = req.query 
