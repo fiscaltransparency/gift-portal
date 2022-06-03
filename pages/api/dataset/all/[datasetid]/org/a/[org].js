@@ -14,51 +14,52 @@ export default async function handler(req, res) {
   const permissions = new Permissions(apolloClient.cache.extract())
 
   try {
-    const { userInfo } = req.cookies
-    const user = decrypt(userInfo) || { login: 'PUBLIC'}
-    const { datasetid, org} = req.query
-    const organization = org.split('.')[0]
-    if (!await permissions.userHasPermission(user.login, organization, 'read')) {
-      res.status(401).send('Unauthorized User')
-    }
+    res.status(200).send("WORKING HERE");
+//     const { userInfo } = req.cookies
+//     const user = decrypt(userInfo) || { login: 'PUBLIC'}
+//     const { datasetid, org} = req.query
+//     const organization = org.split('.')[0]
+//     if (!await permissions.userHasPermission(user.login, organization, 'read')) {
+//       res.status(401).send('Unauthorized User')
+//     }
 
-    //obtain organization datajson and resources from github
-    const apolloClientG = initializeApollo()
+//     //obtain organization datajson and resources from github
+//     const apolloClientG = initializeApollo()
   
-    await apolloClientG.query({
-      query: SINGLE_REPOSITORY,
-      variables: { name: organization },
-    })
+//     await apolloClientG.query({
+//       query: SINGLE_REPOSITORY,
+//       variables: { name: organization },
+//     })
 
-    const metastore = new Metastore(apolloClientG.cache.extract())
-    const dataset = await metastore.fetch(organization)
-    //load google cloud storage
-    const storage = new Storage({
-      projectId: process.env.PROJECT_ID,
-      credentials: getDecryptedSecret()})
+//     const metastore = new Metastore(apolloClientG.cache.extract())
+//     const dataset = await metastore.fetch(organization)
+//     //load google cloud storage
+//     const storage = new Storage({
+//       projectId: process.env.PROJECT_ID,
+//       credentials: getDecryptedSecret()})
 
-    const bucketName = "gift-datasets2"
-    let bucket = storage.bucket(bucketName)
+//     const bucketName = "gift-datasets2"
+//     let bucket = storage.bucket(bucketName)
 
-    let operationUser = uuidv4()
+//     let operationUser = uuidv4()
 
 
-    let newFileStorage = []
+//     let newFileStorage = []
 
-    for(let i=0; i< dataset['resources'].length; i++) {
+//     for(let i=0; i< dataset['resources'].length; i++) {
 
-      let resource = dataset['resources'][i]
-      let fname = `gift-data/${datasetid}/${resource.hash}` 
+//       let resource = dataset['resources'][i]
+//       let fname = `gift-data/${datasetid}/${resource.hash}` 
       
-      if (i > 0) fname = `gift-data/copy/${resource.hashcopy}` 
+//       if (i > 0) fname = `gift-data/copy/${resource.hashcopy}` 
 
-      newFileStorage.push(bucket.file(fname))
-    }
+//       newFileStorage.push(bucket.file(fname))
+//     }
 
-    const mergeFile = bucket.file(`gift-data/${operationUser}/${org}`)
-    await bucket.combine(newFileStorage, mergeFile)
+//     const mergeFile = bucket.file(`gift-data/${operationUser}/${org}`)
+//     await bucket.combine(newFileStorage, mergeFile)
     
-    await downloadv2(mergeFile, res)
+//     await downloadv2(mergeFile, res)
     // download(mergeFile, res).then(res => {
     //   mergeFile.delete()
     // })
