@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid'
 export default async function handler(req, res) {
   const apolloClient = initializeApollo()
   await apolloClient.query({query: PERMISSIONS})
-  const permissions = new Permissions(apolloClient.cache.extract())
+//   const permissions = new Permissions(apolloClient.cache.extract())
   res.status(200).send("In here");
 
   try {
