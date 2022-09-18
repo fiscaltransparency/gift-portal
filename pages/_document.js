@@ -4,6 +4,7 @@ import Document, { Html, Head, Main, NextScript } from 'next/document'
 
 export default class CustomDocument extends Document {
   render() {
+    console.log("here3");
     return (
       <Html>
         <Head>

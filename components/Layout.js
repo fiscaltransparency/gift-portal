@@ -4,6 +4,7 @@ import Footer from './Footer'
 
 
 export default function Layout(props) {
+  console.log("here4");
   return (
     <>
       <Navbar />

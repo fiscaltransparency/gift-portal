@@ -9,6 +9,7 @@ import {ALL_REPOSITRIES} from '../lib/queries'
 import {initializeApollo} from '../lib/apolloClient'
 
 export default function Home({datasets}) {
+  console.log("here");
 
   const [dataState, setDataState] = useState(datasets)
   const selectRef = useRef()
@@ -92,6 +93,7 @@ export async function getServerSideProps() {
   })
   // metastore
   const metastore = new Metastore(apolloClient.cache.extract())
+  console.log("here5");
   let datasets = await metastore.search()
 
   datasets = datasets.filter((dataset) => {

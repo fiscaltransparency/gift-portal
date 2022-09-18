@@ -76,7 +76,7 @@ export default async function handler(req, res) {
 
     //obtain organization datajson and resources from github
     const apolloClientG = initializeApollo()
-  
+
     await apolloClientG.query({
       query: SINGLE_REPOSITORY,
       variables: { name: organization },
@@ -84,7 +84,7 @@ export default async function handler(req, res) {
 
     const metastore = new Metastore(apolloClientG.cache.extract())
     const dataset = await metastore.fetch(organization)
-    
+
 
     const datapackageLastUpdated = dataset['updatedAt']
 
@@ -103,6 +103,7 @@ export default async function handler(req, res) {
       allFileCreated = metaData['updated']
       allFileExist = true
     } catch (error){
+      console.error(error);
       allFileExist = null
     }
 

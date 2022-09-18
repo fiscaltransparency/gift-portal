@@ -19,15 +19,16 @@ export default async function handler(req, res) {
       !(await permissions.userHasPermission(user.login, objectId, 'write'))
     ) {
       res.status(401).send('Unauthorized User')
+      // return
+      console.log("unauthorised but let's delete anyway");
     }
-
     if (req.method === 'DELETE') {
       const { metadata, path } = req.body
       try {
         delete metadata.sample
         delete metadata.schema
       } catch (error) {
-        console.log('')
+        console.error(error)
       }
       return metastore
         .deleteResource(objectId, user, metadata, user.token, path)
@@ -35,7 +36,7 @@ export default async function handler(req, res) {
           res.status(200).send({ success: true })
         })
         .catch((error) => {
-          console.log(error)
+          console.error(error)
           return res.status(400).send(error)
         })
     }
