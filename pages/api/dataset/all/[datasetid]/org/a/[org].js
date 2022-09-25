@@ -5,7 +5,6 @@ import { SINGLE_REPOSITORY } from '../../../../../../../lib/queries'
 import { PERMISSIONS } from '../../../../../../../lib/queries'
 import Permissions from '../../../../../../../lib/Permissions'
 import { decrypt } from '../../../../../../../lib/jwt'
-import { getDecryptedSecret } from '../../../../../../../lib/decret-secret'
 import { v4 as uuidv4 } from 'uuid'
 
 export default async function handler(req, res) {
@@ -24,7 +23,7 @@ export default async function handler(req, res) {
 
     //obtain organization datajson and resources from github
     const apolloClientG = initializeApollo()
-  
+
     await apolloClientG.query({
       query: SINGLE_REPOSITORY,
       variables: { name: organization },
@@ -35,7 +34,11 @@ export default async function handler(req, res) {
     //load google cloud storage
     const storage = new Storage({
       projectId: process.env.PROJECT_ID,
-      credentials: getDecryptedSecret()})
+      credentials: {
+        client_email: process.env.GOOGLE_CLIENT_EMAIL,
+        private_key: process.env.GOOGLE_PRIVATE_KEY,
+      }
+    })
 
     const bucketName = "gift-datasets2"
     let bucket = storage.bucket(bucketName)
@@ -44,27 +47,28 @@ export default async function handler(req, res) {
 
 
     let newFileStorage = []
-
+    console.log(process.env.NEXT_PUBLIC_SECRET);
+    console.log(process.env.GOOGLE_CLIENT_EMAIL);
     for(let i=0; i< dataset['resources'].length; i++) {
 
       let resource = dataset['resources'][i]
-      let fname = `gift-data/${datasetid}/${resource.hash}` 
-      
-      if (i > 0) fname = `gift-data/copy/${resource.hashcopy}` 
+      let fname = `gift-data/${datasetid}/${resource.hash}`
+
+      if (i > 0) fname = `gift-data/copy/${resource.hashcopy}`
 
       newFileStorage.push(bucket.file(fname))
     }
 
     const mergeFile = bucket.file(`gift-data/${operationUser}/${org}`)
     await bucket.combine(newFileStorage, mergeFile)
-    
+
     await downloadv2(mergeFile, res)
     // download(mergeFile, res).then(res => {
     //   mergeFile.delete()
     // })
 
   } catch(error) {
-    res.status(400).send(`Error on Retrieve Resource: ${error.message}`)
+    res.status(400).send(`Error on Retrieve Resource: ${error.message}`);
   }
 
 }
